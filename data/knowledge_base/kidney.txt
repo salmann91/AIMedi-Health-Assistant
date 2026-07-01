@@ -1,0 +1,108 @@
+Kidney Function Tests Overview:
+Kidneys filter waste and excess fluid from blood. Tests measure how well kidneys are working.
+
+Key Tests:
+1. Creatinine - Waste product from muscle metabolism
+2. BUN (Blood Urea Nitrogen) - Measures urea nitrogen
+3. eGFR (Estimated Glomerular Filtration Rate) - Kidney filtration rate
+
+Normal Ranges:
+Creatinine:
+- Adult Males: 0.7-1.3 mg/dL
+- Adult Females: 0.6-1.1 mg/dL
+
+BUN:
+- Normal: 7-20 mg/dL
+
+eGFR:
+- Normal: Above 90 mL/min/1.73m²
+- Stage 1 CKD: 90+ (with kidney damage)
+- Stage 2 CKD: 60-89
+- Stage 3 CKD: 30-59
+- Stage 4 CKD: 15-29
+- Stage 5 CKD: Below 15 (kidney failure)
+
+High Creatinine Causes:
+- Chronic kidney disease
+- Acute kidney injury
+- Dehydration
+- High protein diet
+- Intense exercise
+- Certain medications (NSAIDs, ACE inhibitors)
+- Urinary tract obstruction
+- Muscle disorders
+
+Symptoms of Kidney Problems:
+- Fatigue and weakness
+- Swelling in legs, ankles, feet
+- Decreased urine output
+- Shortness of breath
+- Confusion
+- Nausea and vomiting
+- Chest pain
+- High blood pressure
+
+Protecting Kidney Health:
+
+Diet Recommendations:
+- Limit sodium (below 2300mg/day)
+- Reduce protein if advanced CKD
+- Limit potassium if levels high
+- Control phosphorus intake
+- Stay hydrated (unless fluid restricted)
+- Avoid processed foods
+
+Foods Good for Kidneys:
+- Cabbage, cauliflower
+- Berries (blueberries, strawberries)
+- Apples
+- Fish (omega-3)
+- Egg whites
+- Olive oil
+- Garlic and onions
+
+Foods to Limit:
+- Red meat
+- Dairy products
+- Processed foods
+- Bananas, oranges (high potassium)
+- Tomatoes
+- Dark colas
+- Nuts and seeds (if potassium high)
+
+Lifestyle Changes:
+- Control blood pressure (target: below 130/80)
+- Manage diabetes (HbA1c below 7%)
+- Exercise regularly
+- Maintain healthy weight
+- Quit smoking
+- Limit alcohol
+- Avoid NSAIDs (ibuprofen, naproxen)
+
+Medications to Discuss with Doctor:
+- ACE inhibitors or ARBs for blood pressure
+- Diuretics for fluid retention
+- Phosphate binders
+- Vitamin D supplements
+- Erythropoietin for anemia
+
+Monitoring:
+- Check creatinine and eGFR every 3-6 months
+- Monitor blood pressure daily
+- Urine tests for protein
+- Electrolyte levels
+
+When to Consult Nephrologist:
+- Creatinine above 2.0 mg/dL
+- eGFR below 60
+- Protein in urine
+- Rapid decline in kidney function
+- Difficult to control blood pressure
+- Stage 4 or 5 CKD
+
+Emergency Signs:
+- Severely decreased or no urine output
+- Extreme swelling
+- Confusion or altered mental state
+- Chest pain
+- Severe shortness of breath

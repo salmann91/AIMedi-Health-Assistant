@@ -1,0 +1,153 @@
+Thyroid Function Tests Overview:
+Thyroid gland regulates metabolism, energy, and body temperature through hormones.
+
+Key Tests:
+1. TSH (Thyroid Stimulating Hormone) - Pituitary hormone controlling thyroid
+2. T4 (Thyroxine) - Main thyroid hormone
+3. T3 (Triiodothyronine) - Active thyroid hormone
+4. Free T4 and Free T3 - Unbound, active forms
+
+Normal Ranges:
+TSH:
+- Normal: 0.4-4.0 μIU/mL
+- Optimal: 1.0-2.0 μIU/mL
+
+T4 (Total):
+- Normal: 5.0-12.0 μg/dL
+
+Free T4:
+- Normal: 0.8-1.8 ng/dL
+
+T3 (Total):
+- Normal: 80-200 ng/dL
+
+Free T3:
+- Normal: 2.3-4.2 pg/mL
+
+Hypothyroidism (Underactive Thyroid):
+TSH High, T4 Low
+
+Causes:
+- Hashimoto's thyroiditis (autoimmune)
+- Iodine deficiency
+- Thyroid surgery or radiation
+- Medications (lithium, amiodarone)
+- Pituitary disorders
+- Congenital hypothyroidism
+
+Symptoms:
+- Fatigue and weakness
+- Weight gain
+- Cold intolerance
+- Dry skin and hair
+- Hair loss
+- Constipation
+- Depression
+- Brain fog
+- Slow heart rate
+- Heavy menstrual periods
+
+Treatment:
+- Levothyroxine (Synthroid) - taken on empty stomach
+- Monitor TSH every 6-8 weeks initially
+- Lifelong treatment usually required
+- Take medication consistently
+
+Hyperthyroidism (Overactive Thyroid):
+TSH Low, T4/T3 High
+
+Causes:
+- Graves' disease (autoimmune)
+- Toxic nodular goiter
+- Thyroiditis
+- Excess iodine
+- Too much thyroid medication
+
+Symptoms:
+- Weight loss despite increased appetite
+- Rapid heartbeat
+- Anxiety and irritability
+- Tremors
+- Sweating
+- Heat intolerance
+- Frequent bowel movements
+- Sleep problems
+- Bulging eyes (Graves')
+
+Treatment:
+- Antithyroid medications (Methimazole)
+- Radioactive iodine therapy
+- Beta blockers for symptoms
+- Surgery in some cases
+
+Diet for Thyroid Health:
+
+Foods to Eat:
+- Iodized salt (moderate amounts)
+- Seafood and fish
+- Eggs
+- Dairy products
+- Selenium-rich foods (Brazil nuts, tuna)
+- Zinc-rich foods (beef, shellfish)
+- Iron-rich foods
+- Fruits and vegetables
+
+For Hypothyroidism:
+- Adequate iodine
+- Selenium supplements
+- Vitamin D
+- Avoid excessive soy
+- Limit cruciferous vegetables if raw
+
+For Hyperthyroidism:
+- Low iodine diet if preparing for treatment
+- Avoid iodine supplements
+- Cruciferous vegetables (may be helpful)
+- Increase calories during active phase
+
+Lifestyle Recommendations:
+- Manage stress (affects thyroid)
+- Get adequate sleep
+- Regular exercise
+- Avoid smoking
+- Limit alcohol
+- Maintain healthy weight
+
+Medications Affecting Thyroid:
+- Take levothyroxine alone, 30-60 min before food
+- Separate from calcium, iron supplements (4 hours)
+- Separate from coffee (30-60 min)
+- Biotin can interfere with tests
+
+Monitoring:
+- TSH test every 6-12 months once stable
+- Adjust medication based on symptoms and levels
+- Check thyroid antibodies if autoimmune suspected
+- Ultrasound if nodules present
+
+When to Consult Endocrinologist:
+- TSH above 10 or below 0.1
+- Difficulty controlling thyroid levels
+- Pregnancy with thyroid disorder
+- Thyroid nodules or goiter
+- Suspected thyroid cancer
+- Unusual symptoms
+
+Thyroid and Pregnancy:
+- Increased medication needs
+- Check TSH every 4 weeks
+- Target TSH: 0.1-2.5 (first trimester)
+- Critical for fetal development
+
+Emergency Signs:
+- Thyroid storm (severe hyperthyroidism):
+  * Fever above 103°F
+  * Rapid heart rate >140
+  * Confusion, agitation
+  * Requires immediate hospitalization
+  
+- Myxedema coma (severe hypothyroidism):
+  * Extreme fatigue
+  * Confusion
+  * Low body temperature
+  * Requires emergency treatment

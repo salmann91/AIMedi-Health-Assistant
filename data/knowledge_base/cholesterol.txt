@@ -1,0 +1,96 @@
+Cholesterol Overview:
+Cholesterol is a waxy substance used to build cells and produce hormones. Too much cholesterol increases heart disease risk.
+
+Types of Cholesterol:
+1. LDL (Low-Density Lipoprotein) - "Bad" cholesterol
+2. HDL (High-Density Lipoprotein) - "Good" cholesterol
+3. Triglycerides - Fat in blood
+4. Total Cholesterol - Sum of all cholesterol types
+
+Normal Ranges:
+Total Cholesterol:
+- Desirable: Below 200 mg/dL
+- Borderline high: 200-239 mg/dL
+- High: 240 mg/dL and above
+
+LDL Cholesterol:
+- Optimal: Below 100 mg/dL
+- Near optimal: 100-129 mg/dL
+- Borderline high: 130-159 mg/dL
+- High: 160-189 mg/dL
+- Very high: 190 mg/dL and above
+
+HDL Cholesterol:
+- Poor: Below 40 mg/dL (men), Below 50 mg/dL (women)
+- Good: 60 mg/dL and above
+
+Triglycerides:
+- Normal: Below 150 mg/dL
+- Borderline high: 150-199 mg/dL
+- High: 200-499 mg/dL
+- Very high: 500 mg/dL and above
+
+High Cholesterol Risks:
+- Heart attack
+- Stroke
+- Peripheral artery disease
+- Atherosclerosis (plaque buildup in arteries)
+- Angina (chest pain)
+
+Causes of High Cholesterol:
+- Unhealthy diet (saturated fats, trans fats)
+- Obesity
+- Lack of exercise
+- Smoking
+- Diabetes
+- Genetics (familial hypercholesterolemia)
+- Age (risk increases with age)
+
+Lowering Cholesterol:
+
+Dietary Changes:
+- Reduce saturated fats (red meat, butter, cheese)
+- Eliminate trans fats (fried foods, packaged snacks)
+- Eat omega-3 fatty acids (salmon, mackerel, walnuts)
+- Increase soluble fiber (oats, beans, apples)
+- Add whey protein
+- Plant sterols and stanols
+
+Foods to Eat:
+- Oatmeal and high-fiber cereals
+- Fatty fish (salmon, sardines)
+- Nuts (almonds, walnuts)
+- Olive oil
+- Avocados
+- Beans and legumes
+- Vegetables and fruits
+- Whole grains
+
+Foods to Avoid:
+- Red meat
+- Full-fat dairy
+- Fried foods
+- Processed meats
+- Baked goods with trans fats
+- Sugary foods
+
+Lifestyle Changes:
+- Exercise 30 minutes daily
+- Lose excess weight
+- Quit smoking
+- Limit alcohol
+- Manage stress
+
+Medications (If prescribed):
+- Statins (Atorvastatin, Rosuvastatin)
+- Ezetimibe
+- PCSK9 inhibitors
+- Bile acid sequestrants
+- Fibrates (for high triglycerides)
+
+When to Consult Doctor:
+- LDL above 190 mg/dL
+- Total cholesterol above 240 mg/dL
+- Family history of early heart disease
+- HDL below 40 mg/dL
+- Triglycerides above 500 mg/dL
