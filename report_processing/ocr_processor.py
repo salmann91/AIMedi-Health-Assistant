@@ -16,18 +16,20 @@ class OCRProcessor:
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
             return
+        # On Linux (Railway/cloud), tesseract is on PATH — no need to set path
+        if os.name != 'nt':
+            return
         # Try common Windows installation paths
-        if os.name == 'nt':
-            common_paths = [
-                r'C:\Program Files\Tesseract-OCR\tesseract.exe',
-                r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
-                r'C:\Users\{}\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'.format(os.getenv('USERNAME'))
-            ]
-            for path in common_paths:
-                if os.path.exists(path):
-                    pytesseract.pytesseract.tesseract_cmd = path
-                    print(f"Tesseract found at: {path}")
-                    return
+        common_paths = [
+            r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+            r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
+            r'C:\Users\{}\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'.format(os.getenv('USERNAME'))
+        ]
+        for path in common_paths:
+            if os.path.exists(path):
+                pytesseract.pytesseract.tesseract_cmd = path
+                print(f"Tesseract found at: {path}")
+                return
     
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """Preprocess image for better OCR results"""
