@@ -13,12 +13,19 @@ from dashboard.charts import DashboardCharts
 import pandas as pd
 from auth import verify_user, register_user, create_default_admin
 from utils import validate_api_key, setup_logger, sanitize_filename
+from database import init_db, db_save_report, db_get_user_reports, db_get_report_detail, db_delete_report
 
 # Load environment variables
 load_dotenv()
 
 # Setup logger
 logger = setup_logger("app")
+
+# Initialize database on startup
+try:
+    init_db()
+except Exception as _db_err:
+    print(f"DB init warning: {_db_err}")
 
 # ── Cached heavy singletons (load once, reuse across all reruns) ──────────────
 @st.cache_resource(show_spinner="Loading OCR & extraction engine...")
@@ -387,8 +394,18 @@ def login_page():
                 reg_confirm = st.text_input("Confirm Password", type="password", key="reg_confirm", placeholder="Confirm your password")
 
                 if st.button("✅ Register", use_container_width=True, key="register_btn"):
+                    reg_username = reg_username.strip()
+                    reg_email = reg_email.strip()
+                    reg_password = reg_password.strip()
+                    reg_confirm = reg_confirm.strip()
+                    reg_full_name = reg_full_name.strip()
+                    reg_dob = reg_dob.strip()
                     if not reg_username or not reg_password or not reg_confirm or not reg_email:
                         st.warning("⚠️ Username, Email and Password are required")
+                    elif ' ' in reg_username:
+                        st.error("❌ Username cannot contain spaces")
+                    elif len(reg_username) < 3:
+                        st.error("❌ Username must be at least 3 characters")
                     elif reg_password != reg_confirm:
                         st.error("❌ Passwords do not match. Please try again.")
                     elif len(reg_password) < 6:
@@ -473,7 +490,7 @@ def main():
         
         page = st.radio(
             "Select Page",
-            ["🔬 Upload & Analyze", "ℹ️ About"],
+            ["🔬 Upload & Analyze", "📋 Report History", "ℹ️ About"],
             index=0
         )
         
@@ -576,6 +593,8 @@ def main():
     if page == "🔬 Upload & Analyze":
         gender_value = "male" if "Male" in gender else "female"
         upload_analyze_page(gender_value)
+    elif page == "📋 Report History":
+        report_history_page()
     elif page == "ℹ️ About":
         about_page()
     
@@ -841,6 +860,18 @@ def upload_analyze_page(gender):
                 st.session_state.ai_summary = ai_summary
                 st.session_state.analysis_complete = True
                 st.session_state.patient_info = patient_info
+
+                # Auto-save report to MySQL
+                try:
+                    db_save_report(
+                        st.session_state.username,
+                        uploaded_file.name,
+                        patient_info,
+                        analysis,
+                        ai_summary
+                    )
+                except Exception as _save_err:
+                    print(f"Report save warning: {_save_err}")
                 
                 if not st.session_state.chatbot:
                     chatbot = _get_chatbot()
@@ -1215,6 +1246,60 @@ def display_ai_assistant():
             st.success("✅ Chat history cleared!")
             st.rerun()
 
+def report_history_page():
+    st.markdown('<h2 class="sub-header">📋 Report History</h2>', unsafe_allow_html=True)
+
+    reports = db_get_user_reports(st.session_state.username)
+
+    if not reports:
+        st.info("ℹ️ No reports found. Upload a blood report to get started!")
+        return
+
+    st.success(f"✅ Found **{len(reports)}** report(s) in your history")
+
+    for r in reports:
+        risk_emoji = {'Minimal': '🟢', 'Low': '🟡', 'Moderate': '🟠',
+                      'High': '🔴', 'Critical': '🔴'}.get(r['risk_level'], '⚪')
+        label = f"{risk_emoji} {r['created_at'].strftime('%d %b %Y %I:%M %p')} — {r['filename'] or 'Report'} | Risk: {r['risk_level']} ({r['risk_score']}/100)"
+
+        with st.expander(label):
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown(f"**👤 Patient:** {r['patient_name'] or 'N/A'}")
+                st.markdown(f"**🎂 Age:** {r['patient_age'] or 'N/A'}")
+            with col2:
+                st.markdown(f"**⚕️ Gender:** {r['patient_gender'] or 'N/A'}")
+                st.markdown(f"**📅 Report Date:** {r['report_date'] or 'N/A'}")
+            with col3:
+                st.markdown(f"**🎯 Risk Score:** {r['risk_score']}/100")
+                st.markdown(f"**🚨 Risk Level:** {r['risk_level']}")
+
+            # Load full details
+            detail = db_get_report_detail(r['id'])
+            if detail.get('parameters'):
+                st.markdown("**🩸 Blood Parameters:**")
+                params_df = pd.DataFrame([
+                    {
+                        'Parameter': p['parameter'].replace('_', ' ').title(),
+                        'Value': p['value'],
+                        'Unit': p['unit'],
+                        'Status': p['status'],
+                        'Reference Range': f"{p['ref_min']} - {p['ref_max']}"
+                    }
+                    for p in detail['parameters']
+                ])
+                st.dataframe(params_df, use_container_width=True, hide_index=True)
+
+            if detail.get('ai_summary'):
+                with st.expander("🤖 View AI Summary"):
+                    st.markdown(detail['ai_summary'])
+
+            if st.button(f"🗑️ Delete Report", key=f"del_{r['id']}"):
+                if db_delete_report(r['id']):
+                    st.success("✅ Report deleted!")
+                    st.rerun()
+
+
 def about_page():
     st.markdown('<h2 class="sub-header">ℹ️ About This Application</h2>', unsafe_allow_html=True)
     
@@ -1280,7 +1365,7 @@ def display_footer():
             ⚕️ <em>This application is for educational purposes only. Always consult with a licensed healthcare professional.</em>
         </p>
         <p style="opacity: 0.7; font-size: 0.9rem;">
-            © 2024 AIMedi Health Assistant. All rights reserved.
+            © 2026 AIMedi Health Assistant. All rights reserved.
         </p>
     </div>
     """, unsafe_allow_html=True)
