@@ -8,28 +8,25 @@ import json
 load_dotenv()
 
 # Railway uses MYSQLHOST/MYSQLUSER/etc, local uses MYSQL_HOST/MYSQL_USER/etc
+_host = os.getenv('MYSQLHOST') or os.getenv('MYSQL_HOST', 'localhost')
+_ssl  = {'ssl_disabled': False} if 'aivencloud.com' in _host else {}
+
 DB_CONFIG = {
-    'host':     os.getenv('MYSQLHOST')     or os.getenv('MYSQL_HOST', 'localhost'),
+    'host':     _host,
     'port':     int(os.getenv('MYSQLPORT') or os.getenv('MYSQL_PORT', 3306)),
     'user':     os.getenv('MYSQLUSER')     or os.getenv('MYSQL_USER', 'root'),
     'password': os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_PASSWORD', ''),
     'database': os.getenv('MYSQLDATABASE') or os.getenv('MYSQL_DATABASE', 'aimedi_db'),
-    'autocommit': True
+    'autocommit': True,
+    **_ssl
 }
 
 def get_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
 def init_db():
-    """Create database and all tables if they don't exist."""
-    # Connect without database first to create it
-    cfg = {k: v for k, v in DB_CONFIG.items() if k != 'database' and k != 'autocommit'}
-    conn = mysql.connector.connect(**cfg, autocommit=True)
-    cur = conn.cursor()
-    cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
-    cur.close()
-    conn.close()
-
+    """Create all tables if they don't exist."""
+    # Aiven already creates the database, so connect directly
     conn = get_connection()
     cur = conn.cursor()
 
