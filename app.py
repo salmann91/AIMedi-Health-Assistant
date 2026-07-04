@@ -11,7 +11,7 @@ from ai.summary_generator import SummaryGenerator
 from ai.chatbot import HealthChatbot
 from dashboard.charts import DashboardCharts
 import pandas as pd
-from auth import verify_user, register_user, create_default_admin
+from auth import verify_user, register_user, create_default_admin, derive_username_from_email
 from utils import validate_api_key, setup_logger, sanitize_filename
 from database import init_db, db_save_report, db_get_user_reports, db_get_report_detail, db_delete_report
 
@@ -386,10 +386,9 @@ def login_page():
                         st.warning("⚠️ Please enter both username and password")
             
             with tab_register:
-                reg_full_name = st.text_input("Full Name", key="reg_full_name", placeholder="Enter your full name")
+                st.caption("Choose a username or leave it blank to use your email name.")
+                reg_username = st.text_input("Username", key="reg_username", placeholder="Choose a username")
                 reg_email = st.text_input("Email Address", key="reg_email", placeholder="Enter your email (e.g. user@email.com)")
-                reg_dob = st.text_input("Date of Birth (DD-MM-YYYY)", key="reg_dob", placeholder="e.g. 15-08-1995")
-                reg_username = st.text_input("Username", key="reg_user", placeholder="Choose a username (min 3 chars)")
                 reg_password = st.text_input("Password", type="password", key="reg_pass", placeholder="Create a password (min 6 chars)")
                 reg_confirm = st.text_input("Confirm Password", type="password", key="reg_confirm", placeholder="Confirm your password")
 
@@ -398,29 +397,24 @@ def login_page():
                     reg_email = reg_email.strip()
                     reg_password = reg_password.strip()
                     reg_confirm = reg_confirm.strip()
-                    reg_full_name = reg_full_name.strip()
-                    reg_dob = reg_dob.strip()
-                    if not reg_username or not reg_password or not reg_confirm or not reg_email:
-                        st.warning("⚠️ Username, Email and Password are required")
-                    elif ' ' in reg_username:
-                        st.error("❌ Username cannot contain spaces")
-                    elif len(reg_username) < 3:
-                        st.error("❌ Username must be at least 3 characters")
+                    if not reg_email or not reg_password or not reg_confirm:
+                        st.warning("⚠️ Email and Password are required")
                     elif reg_password != reg_confirm:
                         st.error("❌ Passwords do not match. Please try again.")
                     elif len(reg_password) < 6:
                         st.error("❌ Password must be at least 6 characters")
                     else:
+                        username_to_use = reg_username or derive_username_from_email(reg_email)
                         success, msg = register_user(
-                            reg_username, reg_password,
+                            username_to_use, reg_password,
                             email=reg_email,
-                            full_name=reg_full_name,
-                            dob=reg_dob
+                            full_name="",
+                            dob=""
                         )
                         if success:
                             st.success(f"✅ {msg} Logging you in...")
                             st.session_state.logged_in = True
-                            st.session_state.username = reg_username
+                            st.session_state.username = username_to_use
                             st.balloons()
                             st.rerun()
                         else:
@@ -449,7 +443,6 @@ def main():
         _display_name = _sidebar_user.get('full_name') or st.session_state.username
         _display_name = _display_name.replace("<", "&lt;").replace(">", "&gt;")
         _email_line = f"<p style='margin:2px 0; font-size:0.82rem; opacity:0.85;'>📧 {_sidebar_user['email']}</p>" if _sidebar_user.get('email') else ""
-        _dob_line   = f"<p style='margin:2px 0; font-size:0.82rem; opacity:0.85;'>🎂 {_sidebar_user['dob']}</p>" if _sidebar_user.get('dob') else ""
 
         # Patient info from uploaded report
         _pi = st.session_state.get('patient_info', {})
@@ -472,7 +465,6 @@ def main():
             <h2 style="margin-top: 0; color: white;">👤 User Profile</h2>
             <p style="margin: 0; font-size: 1.1rem; font-weight: bold;">{_display_name}</p>
             {_email_line}
-            {_dob_line}
             {_patient_block}
         </div>
         """, unsafe_allow_html=True)
@@ -525,18 +517,12 @@ def main():
                 placeholder="Enter your email",
                 key="settings_email"
             )
-            new_dob = st.text_input(
-                "Date of Birth (DD-MM-YYYY)",
-                value=user_info.get("dob", ""),
-                placeholder="e.g. 15-08-1995",
-                key="settings_dob"
-            )
             if st.button("💾 Save Profile", use_container_width=True, key="save_profile_btn"):
                 success, msg = update_user_info(
                     st.session_state.username,
                     full_name=new_full_name,
                     email=new_email if new_email else None,
-                    dob=new_dob
+                    dob=""
                 )
                 if success:
                     st.success(f"✅ {msg}")
@@ -560,7 +546,7 @@ def main():
                         st.error(f"❌ {msg}")
 
         # Show current profile info
-        if user_info.get("full_name") or user_info.get("email") or user_info.get("dob"):
+        if user_info.get("full_name") or user_info.get("email"):
             st.markdown("""
             <div class="info-box" style="font-size:0.85rem;">
             """, unsafe_allow_html=True)
@@ -568,8 +554,6 @@ def main():
                 st.markdown(f"👤 **Name:** {user_info['full_name']}")
             if user_info.get("email"):
                 st.markdown(f"📧 **Email:** {user_info['email']}")
-            if user_info.get("dob"):
-                st.markdown(f"🎂 **DOB:** {user_info['dob']}")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.divider()

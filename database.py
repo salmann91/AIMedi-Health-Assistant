@@ -1,5 +1,10 @@
-import mysql.connector
-from mysql.connector import Error
+try:
+    import mysql.connector
+    from mysql.connector import Error
+except Exception:  # pragma: no cover - fallback when MySQL driver is missing
+    mysql = None
+    Error = Exception
+
 import os
 from dotenv import load_dotenv
 from datetime import datetime
@@ -22,61 +27,67 @@ DB_CONFIG = {
 }
 
 def get_connection():
+    if mysql is None:
+        raise Error("MySQL connector is not installed")
     return mysql.connector.connect(**DB_CONFIG)
 
 def init_db():
     """Create all tables if they don't exist."""
-    # Aiven already creates the database, so connect directly
-    conn = get_connection()
-    cur = conn.cursor()
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id          INT AUTO_INCREMENT PRIMARY KEY,
-            username    VARCHAR(50)  UNIQUE NOT NULL,
-            password    VARCHAR(200) NOT NULL,
-            email       VARCHAR(100) UNIQUE,
-            full_name   VARCHAR(100),
-            dob         VARCHAR(20),
-            created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                username    VARCHAR(50)  UNIQUE NOT NULL,
+                password    VARCHAR(200) NOT NULL,
+                email       VARCHAR(100) UNIQUE,
+                full_name   VARCHAR(100),
+                dob         VARCHAR(20),
+                created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS reports (
-            id              INT AUTO_INCREMENT PRIMARY KEY,
-            user_id         INT NOT NULL,
-            filename        VARCHAR(255),
-            patient_name    VARCHAR(100),
-            patient_age     VARCHAR(20),
-            patient_gender  VARCHAR(20),
-            report_date     VARCHAR(50),
-            risk_score      INT,
-            risk_level      VARCHAR(20),
-            ai_summary      TEXT,
-            created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-    """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS reports (
+                id              INT AUTO_INCREMENT PRIMARY KEY,
+                user_id         INT NOT NULL,
+                filename        VARCHAR(255),
+                patient_name    VARCHAR(100),
+                patient_age     VARCHAR(20),
+                patient_gender  VARCHAR(20),
+                report_date     VARCHAR(50),
+                risk_score      INT,
+                risk_level      VARCHAR(20),
+                ai_summary      TEXT,
+                created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        """)
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS blood_parameters (
-            id           INT AUTO_INCREMENT PRIMARY KEY,
-            report_id    INT NOT NULL,
-            parameter    VARCHAR(50),
-            value        FLOAT,
-            unit         VARCHAR(30),
-            status       VARCHAR(20),
-            severity     VARCHAR(20),
-            ref_min      FLOAT,
-            ref_max      FLOAT,
-            FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE
-        )
-    """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS blood_parameters (
+                id           INT AUTO_INCREMENT PRIMARY KEY,
+                report_id    INT NOT NULL,
+                parameter    VARCHAR(50),
+                value        FLOAT,
+                unit         VARCHAR(30),
+                status       VARCHAR(20),
+                severity     VARCHAR(20),
+                ref_min      FLOAT,
+                ref_max      FLOAT,
+                FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE
+            )
+        """)
 
-    cur.close()
-    conn.close()
-    print("Database initialized successfully.")
+        cur.close()
+        conn.close()
+        print("Database initialized successfully.")
+        return True
+    except Error as exc:
+        print(f"Database initialization skipped: {exc}")
+        return False
 
 # ── User operations ────────────────────────────────────────────────────────────
 

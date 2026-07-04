@@ -144,30 +144,25 @@ class BloodReportExtractor:
     def _parse_text(self, text: str) -> Dict:
         """Parse text to extract blood parameters - Enhanced OCR handling"""
         results = {}
-        
+
         if not text or not isinstance(text, str):
             print(f"Warning: text is not a string or is empty. Type: {type(text)}")
             return results
-        
+
         try:
-            # Clean OCR text first
             text = self._clean_ocr_text(text)
-            
-            # Convert to lowercase for searching
-            text_lower = text.lower()
-            
-            # Method 1: Line-by-line parsing (for well-formatted reports)
-            lines = text_lower.split('\n')
+            lines = text.split('\n')
+
             for line in lines:
-                # Skip empty lines and headers
                 if len(line.strip()) < 3:
                     continue
-                    
+
+                normalized_line = self._normalize_text_for_matching(line)
                 for param_key, keywords in self.parameters.items():
-                    if param_key in results:  # Already found this parameter
+                    if param_key in results:
                         continue
-                    # Check if any keyword matches
-                    if any(keyword in line for keyword in keywords):
+
+                    if self._line_matches_keywords(normalized_line, keywords):
                         value = self._extract_value(line)
                         if value is not None:
                             results[param_key] = {
@@ -176,38 +171,54 @@ class BloodReportExtractor:
                                 'raw_text': line.strip()
                             }
                             print(f"Found {param_key}: {value} from line: {line[:80]}")
-                            break  # Move to next line after finding a param
-            
-            # Method 2: Paragraph-based extraction (for poorly formatted OCR)
-            if len(results) < 3:  # If we found very few parameters, try alternate method
+                            break
+
+            if len(results) < 3:
                 print("Using paragraph-based extraction for better OCR matching...")
-                paragraphs = text_lower.split('\n\n')
+                paragraphs = text.split('\n\n')
                 for para in paragraphs:
-                    para = para.replace('\n', ' ')  # Combine multi-line paragraphs
+                    if len(para.strip()) < 3:
+                        continue
+                    normalized_para = self._normalize_text_for_matching(para.replace('\n', ' '))
                     for param_key, keywords in self.parameters.items():
-                        if param_key in results:  # Already found this parameter
+                        if param_key in results:
                             continue
-                        for keyword in keywords:
-                            if keyword in para:
-                                # Find numbers near the keyword
-                                # Get the substring containing the keyword and nearby text
-                                idx = para.find(keyword)
-                                context = para[max(0, idx-50):min(len(para), idx+100)]
-                                value = self._extract_value(context)
-                                if value is not None:
-                                    results[param_key] = {
-                                        'value': value,
-                                        'unit': self._extract_unit(context),
-                                        'raw_text': context.strip()
-                                    }
-                                    print(f"Found {param_key}: {value} from context: {context[:80]}")
-                                    break
+                        if self._line_matches_keywords(normalized_para, keywords):
+                            idx = normalized_para.find(self._best_keyword_match(normalized_para, keywords))
+                            context = para[max(0, idx-50):min(len(para), idx+100)]
+                            value = self._extract_value(context)
+                            if value is not None:
+                                results[param_key] = {
+                                    'value': value,
+                                    'unit': self._extract_unit(context),
+                                    'raw_text': context.strip()
+                                }
+                                print(f"Found {param_key}: {value} from context: {context[:80]}")
+                                break
         except Exception as e:
             print(f"Error in _parse_text: {e}")
             import traceback
             traceback.print_exc()
-        
+
         return results
+
+    def _normalize_text_for_matching(self, text: str) -> str:
+        if not text:
+            return ""
+        text = text.lower()
+        text = re.sub(r'[^a-z0-9]+', ' ', text)
+        return re.sub(r'\s+', ' ', text).strip()
+
+    def _line_matches_keywords(self, text: str, keywords: List[str]) -> bool:
+        normalized_keywords = [self._normalize_text_for_matching(keyword) for keyword in keywords if keyword]
+        return any(keyword and keyword in text for keyword in normalized_keywords)
+
+    def _best_keyword_match(self, text: str, keywords: List[str]) -> str:
+        normalized_keywords = [self._normalize_text_for_matching(keyword) for keyword in keywords if keyword]
+        for keyword in normalized_keywords:
+            if keyword and keyword in text:
+                return keyword
+        return ''
     
     def _clean_ocr_text(self, text: str) -> str:
         """Clean OCR extracted text to improve parameter detection"""

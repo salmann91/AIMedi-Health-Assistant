@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 class ReportParser:
     def __init__(self):
         self.reference_ranges = {
@@ -22,49 +23,103 @@ class ReportParser:
             'alt': {'normal': (7, 56), 'unit': 'U/L'},
             'ast': {'normal': (10, 40), 'unit': 'U/L'}
         }
-    
+        self.aliases = {
+            'hb': 'hemoglobin',
+            'haemoglobin': 'hemoglobin',
+            'hgb': 'hemoglobin',
+            'hba1c': 'hba1c',
+            'hba lc': 'hba1c',
+            'blood sugar': 'glucose',
+            'fasting glucose': 'glucose',
+            'total cholesterol': 'cholesterol',
+            'serum cholesterol': 'cholesterol',
+            't cholesterol': 'cholesterol',
+            'cholesterol total': 'cholesterol',
+            'rbc count': 'rbc',
+            'white blood cell': 'wbc',
+            'wbc count': 'wbc',
+            'platelet count': 'platelets',
+            'serum creatinine': 'creatinine',
+            'blood urea nitrogen': 'bun',
+            'vitamin d3': 'vitamin_d',
+            'thyroid stimulating hormone': 'tsh',
+            'triiodothyronine': 't3',
+            'thyroxine': 't4',
+        }
+
     def parse_report(self, extracted_data, gender: str = 'male') -> List[Dict]:
         parsed_results = []
-        
-        # Handle both dict and tuple returns from extractor
+
         if isinstance(extracted_data, tuple):
-            print(f"Warning: parse_report received tuple, attempting to unwrap...")
-            # If it's a tuple, try to find and extract the dict with blood parameters
+            print("Warning: parse_report received tuple, attempting to unwrap...")
             for i, item in enumerate(extracted_data):
                 if isinstance(item, dict) and any(key in item for key in ['hemoglobin', 'rbc', 'glucose', 'hba1c']):
                     extracted_data = item
                     print(f"  Found blood parameters dict at element {i}")
                     break
             else:
-                # If no dict with blood params found, use first element if it's a dict
                 if len(extracted_data) > 0 and isinstance(extracted_data[0], dict):
                     extracted_data = extracted_data[0]
-                    print(f"  Using first element (dict)")
+                    print("  Using first element (dict)")
                 else:
-                    print(f"  No valid dict found in tuple")
+                    print("  No valid dict found in tuple")
                     return []
-        
-        # Ensure extracted_data is a dictionary
+
         if not isinstance(extracted_data, dict):
             print(f"Warning: extracted_data is {type(extracted_data)}, expected dict")
             return []
-        
+
         for param, data in extracted_data.items():
-            if param in self.reference_ranges:
-                # Handle if data is not a dict
-                if not isinstance(data, dict):
-                    continue
-                    
-                result = self._analyze_parameter(param, data['value'], gender)
-                result['unit'] = data.get('unit', self.reference_ranges[param]['unit'])
-                result['raw_text'] = data.get('raw_text', '')
-                parsed_results.append(result)
-        
+            canonical_param = self._normalize_parameter_name(param)
+            if not canonical_param:
+                continue
+            if canonical_param not in self.reference_ranges:
+                continue
+
+            if isinstance(data, dict):
+                value = data.get('value')
+                unit = data.get('unit')
+                raw_text = data.get('raw_text', '')
+            else:
+                value = data
+                unit = ''
+                raw_text = ''
+
+            try:
+                value = float(value)
+            except (TypeError, ValueError):
+                continue
+
+            result = self._analyze_parameter(canonical_param, value, gender)
+            result['unit'] = unit or self.reference_ranges[canonical_param]['unit']
+            result['raw_text'] = raw_text
+            parsed_results.append(result)
+
         return parsed_results
-    
+
+    def _normalize_parameter_name(self, param: str) -> str:
+        if not param:
+            return ''
+
+        normalized = str(param).strip().lower().replace('-', ' ').replace('_', ' ')
+        normalized = ' '.join(normalized.split())
+        normalized = normalized.replace('serum', '').replace('blood', '').strip()
+
+        if normalized in self.aliases:
+            return self.aliases[normalized]
+
+        for alias, canonical in self.aliases.items():
+            if alias in normalized:
+                return canonical
+
+        if normalized in self.reference_ranges:
+            return normalized
+
+        return normalized.replace(' ', '_') if normalized else ''
+
     def _analyze_parameter(self, param: str, value: float, gender: str) -> Dict:
         ranges = self.reference_ranges[param]
-        
+
         if gender in ranges:
             min_val, max_val = ranges[gender]
         elif 'normal' in ranges:
@@ -73,13 +128,13 @@ class ReportParser:
             min_val, max_val = ranges['optimal']
         else:
             min_val, max_val = list(ranges.values())[0]
-        
+
         status = 'Normal'
         if value < min_val:
             status = 'Low'
         elif value > max_val:
             status = 'High'
-        
+
         return {
             'parameter': param,
             'value': value,
